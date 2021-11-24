@@ -1,4 +1,4 @@
-# 🌌 Atmosfetch (CLI)
+#Atmosfetch (CLI)
  
 <img src="https://i.imgur.com/WZY0BlW.jpg">
 AtmosFetch is a python script to download latest Atmosphere release with some extra homebrews and prepare all needed SD files.
