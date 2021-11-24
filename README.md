@@ -11,12 +11,6 @@ AtmosFetch is a python script to download latest Atmosphere release with some ex
 
 https://github.com/Lunyyx/AtmosphereVanillaFetcher-CLI/wiki/Accueil-Home
 
-If you have any problems with the script, you can find help on our discord
-
-[![Discord](https://img.shields.io/discord/643436008452521984.svg?logo=discord&logoColor=white&label=Discord&color=7289DA
-)](https://discord.com/invite/4YkUZvC)
-
-
 Thanks to the developer for their work
 
 - SciresM (Atmosphère & DayBreak) : https://github.com/Atmosphere-NX/Atmosphere
