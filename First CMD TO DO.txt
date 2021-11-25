@@ -1,0 +1,6 @@
+#Upgrade of PIP
+pip install --upgrade pip
+
+#Install needed modules
+pip install requests clint colorama
+

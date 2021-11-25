@@ -1,0 +1,94 @@
+{
+    "soft": [
+        {
+            "packagename": "Atmosphere",
+            "repository": "Atmosphere-NX/Atmosphere",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(atmosphere.*master.*hbl.*.zip)",
+            "url": "",
+            "version": "",
+            "filetype": "CFW"
+        },
+        {
+            "packagename": "Atmosphere-Fusee",
+            "repository": "Atmosphere-NX/Atmosphere",
+            "releasetype": "latest",
+            "filename": "fusee.bin",
+            "filesearch": "(fusee.bin)",
+            "url": "",
+            "version": "",
+            "filetype": "BootFile"
+        },
+        {
+            "packagename": "Hekate",
+            "repository": "CTCaer/hekate",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(.*hekate.*Nyx.*.zip)",
+            "url": "",
+            "version": "",
+            "filetype": "Bootloader"
+        },
+        {
+            "packagename": "Patches",
+            "repository": "ITotalJustice/patches",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(fusee.*.zip|SigPatches.*.zip)",
+            "url": "",
+            "version": "",
+            "filetype": "Patches"
+        },
+        {
+            "packagename": "Lockpick_RCM",
+            "repository": "shchmue/Lockpick_RCM",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(Lockpick_RCM.bin)",
+            "url": "",
+            "version": "",
+            "filetype": "Payload"
+        },
+        {
+            "packagename": "90DNSTester",
+            "repository": "meganukebmp/Switch_90DNS_tester",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(.*90DNS.*.nro)",
+            "url": "",
+            "version": "",
+            "filetype": "Homebrew"
+        },
+        {
+            "packagename": "Checkpoint",
+            "repository": "FlagBrew/Checkpoint",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(Checkpoint.nro)",
+            "url": "",
+            "version": "",
+            "filetype": "Homebrew"
+        },
+        {
+            "packagename": "DBI",
+            "repository": "rashevskyv/dbi",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(DBI.*.nro)",
+            "url": "",
+            "version": "",
+            "filetype": "Homebrew"
+        },
+        {
+            "packagename": "JKSV",
+            "repository": "J-D-K/JKSV",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "JKSV.nro",
+            "url": "",
+            "version": "",
+            "filetype": "Homebrew"
+        }
+    ]
+}
