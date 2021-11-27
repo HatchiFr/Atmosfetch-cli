@@ -1,15 +1,31 @@
-#Atmosfetch (CLI)
+# 🌌 Atmosfetch (CLI)
  
 <img src="https://i.imgur.com/WZY0BlW.jpg">
 AtmosFetch is a python script to download latest Atmosphere release with some extra homebrews and prepare all needed SD files.
 
+
 ## 🔧 Prerequisites
 
 - Python 3: https://www.python.org/downloads/
+- Only tested on Python 3.10
+- Python 3 must be well configured in your environnement PATH.
+- You must install some python packages : pip install requests clint colorama
 
 ## 🌠 User's guide
 
-https://github.com/Lunyyx/AtmosphereVanillaFetcher-CLI/wiki/Accueil-Home
+There is 3 possibles modes with Atmosfetch :
+-at : Atmosphere as default boot SXOS RCM (boot.dat)  
+-he : Hekate as default boot SXOS RCM (boot.dat)
+-c : clean mode, delete SD folder and redownload all even if there is'nt updates
+
+Exemple : python Atmosfetch-cli.py -at
+
+By default, if there is no arguments Atmosphere will be used as default boot.
+
+You can combine a boot mode with clean mode.  
+
+When the script finish to execute : there is a SD folder with files that you can copy on your SD as is and a end zip file that you can share or keep for archives.
+
 
 Thanks to the developer for their work
 

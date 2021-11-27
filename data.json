@@ -14,11 +14,11 @@
             "packagename": "Atmosphere-Fusee",
             "repository": "Atmosphere-NX/Atmosphere",
             "releasetype": "latest",
-            "filename": "fusee.bin",
+            "filename": "",
             "filesearch": "(fusee.bin)",
             "url": "",
             "version": "",
-            "filetype": "BootFile"
+            "filetype": "Bootloader"
         },
         {
             "packagename": "Hekate",
@@ -29,6 +29,16 @@
             "url": "",
             "version": "",
             "filetype": "Bootloader"
+        },
+        {
+            "packagename": "Atmosphere-Hekate-Config",
+            "repository": "HatchiFr/Atmosphere-config",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(Atmosphere-config.zip)",
+            "url": "",
+            "version": "",
+            "filetype": "Config"
         },
         {
             "packagename": "Patches",

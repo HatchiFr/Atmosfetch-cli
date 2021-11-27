@@ -1,11 +1,13 @@
 """"
 Use Python 3
 Workload Patch Script made by HatchiFR
+Version 1.0
+Date 27/11/2021
 """
 
 ##Inputs
 username = ""
-# from https://github.com/user/settings/tokens
+# from https://github.com/settings/tokens
 token = ""
 
 ##Folders
@@ -18,8 +20,12 @@ ToolsDirectory= "Tools"
 #Folders
 ScriptFolders = [DownloadDirectory, SDDirectory, ToolsDirectory]
 SDFolders = ["atmosphere", "bootloader", "switch"]
+#CleanMode
+cleanmode = False
 
 ##.:::. Module .:::.
+# Argparse to manage args
+import argparse
 #Requests is needed for web call
 import requests
 #Progress Bar that working with requests
@@ -53,8 +59,11 @@ def func_RelocateCurrentWorkingFolder():
 	os.chdir(os.path.dirname(__file__))
 
 def func_CleanSDFolder():
-	os.rmdir(SDDirectory)
-	print(Style.BRIGHT + Fore.MAGENTA + "LOG : " + folder + " folder deleted")
+	try:
+		shutil.rmtree(SDDirectory, ignore_errors=True)
+		print(Style.BRIGHT + Fore.MAGENTA + "LOG : Directory " + SDDirectory + " has been removed successfully")
+	except OSError as error:
+		print(error)
 
 def func_SkeletonFolders():
 	for folder in ScriptFolders:
@@ -125,11 +134,45 @@ def func_UnzipFiles(data,SDDirectory,DownloadDirectory):
 		zip_ref.extractall(SDDirectory)
 
 ##.:::. Main .:::.
+# Initiate the parser
+print(Style.BRIGHT + Fore.WHITE + "Welcome on AtmosFetch !")
+print(Style.BRIGHT + Fore.WHITE + "Script created by HatchiFR")
+print(Style.BRIGHT + Fore.WHITE + "Version 1.0 - 24/11/2021")
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-he", "--hekate", help="Convert hekate.bin as boot.dat", action="store_true")
+parser.add_argument("-at", "--atmosphere", help="Convert fusee.bin as boot.dat", action="store_true")
+parser.add_argument("-c", "--clean", help="Remove SD folder and redownload all", action="store_true")
+
+# Read arguments from the command line
+args = parser.parse_args()
+
+#Check if someone is using -he and -at same time ...
+if (args.atmosphere and args.hekate):
+	print(Style.BRIGHT + Fore.RED + "ERROR : You must specify only one bootloader file in args !")
+	print(Style.BRIGHT + Fore.YELLOW + "LOG : Please check atmosfetch-cli.py -h")
+	exit()
+
 #Change current working dir to script location folder
 os.chdir(os.path.dirname(__file__))
 
-#Futur Function to clean on demand the SD Folder
-#func_CleanSDFolder()
+#if not (any(vars(args).values())):
+#	print (Style.BRIGHT + Fore.RED + "ERROR : You must at least specify one argument to use that script, check -h")
+#	exit()
+
+if args.clean :
+	#Function to clean on demand the SD Folder
+	cleanmode = True
+	print(Style.BRIGHT + Fore.GREEN + "   ________    _________    _   __")
+	print(Style.BRIGHT + Fore.GREEN + "  / ____/ /   / ____/   |  / | / /")
+	print(Style.BRIGHT + Fore.GREEN + " / /   / /   / __/ / /| | /  |/ / ")
+	print(Style.BRIGHT + Fore.GREEN + "/ /___/ /___/ /___/ ___ |/ /|  /  ")
+	print(Style.BRIGHT + Fore.GREEN + "\\____/_____/_____/_/_ |_/_/_|_/   ")
+	print(Style.BRIGHT + Fore.GREEN + "   /  |/  / __ \\/ __ \\/ ____/     ")
+	print(Style.BRIGHT + Fore.GREEN + "  / /|_/ / / / / / / / __/        ")
+	print(Style.BRIGHT + Fore.GREEN + " / /  / / /_/ / /_/ / /___        ")
+	print(Style.BRIGHT + Fore.GREEN + "/_/  /_/\\____/_____/_____/        ")
+	func_CleanSDFolder()
 
 #Check if SkeletonFolders exist if not create it
 func_SkeletonFolders()
@@ -142,23 +185,27 @@ gh_session = requests.Session()
 gh_session.auth = (username, token)
 
 #Counter to find the index to update data in dict
-c = 0
+index = 0
+#Update found
+NeedToUpdate = False
 #Let's iterate for each entry in the jsondata list (jsondata["soft"] is a list)
 for i in jsondata["soft"]:
 	#The double asterisks ** expands the dictionary jsondata to allow every key-value pair from dict to be passed to the __init__() method of Class.
 	data = package(**i)
-	#If there is an update (return True) we are doing other task else nothing to do for this package
-	if func_CheckGithubRepository(data,gh_session):
+	#If there is an update (return True) or if we are ine CleanMode !
+	if (func_CheckGithubRepository(data,gh_session) or cleanmode):
 		func_DownloadFiles(data)
+		#Check if file is Atmosphere to get version
+		if data.packagename == "Atmosphere":
+			AtmosphereVersion = data.version
+		if data.packagename == "Hekate":
+			HekateVersion = data.version.replace("v", "")
+		if data.packagename == "Patches":
+			PatchesVersion = data.version
+
 		#Check if file is a ZipFile
 		if re.findall("%s" % ".*.zip", data.filename, re.IGNORECASE):
 			func_UnzipFiles(data,SDDirectory,DownloadDirectory)
-
-		#Check if file is a bootfile to convert
-		if data.filetype == "BootFile":
-			filename = DownloadDirectory + "/" + data.filename
-			exec(open(ToolsDirectory + "/tx_custom_boot.py").read())
-			print(Style.BRIGHT + Fore.YELLOW + "LOG : bootfile.dat for " + data.packagename + " generated")
 
 		#Check if file is a Payload
 		if data.filetype == "Payload":
@@ -168,10 +215,36 @@ for i in jsondata["soft"]:
 		if data.filetype == "Homebrew":
 			shutil.copyfile(DownloadDirectory + "/" + data.filename, SDDirectory + "/switch/" + data.filename)
 
-	#Convert data to dict format and update jsondata entry
-	jsondata["soft"][c] = data.__dict__
-	#Count the index of the jsondata[soft] dict
-	c += 1
+		#Manage Atmosphere boot.data file case
+		# If -at or if -c and no -he or 
+		if (args.atmosphere or (args.clean and not args.hekate) or (not (any(vars(args).values())))):
+			#Check if file is a bootfile to convert
+			if data.filetype == "Bootloader" and data.packagename == "Atmosphere-Fusee":
+				filename = DownloadDirectory + "/" + data.filename
+				exec(open(ToolsDirectory + "/tx_custom_boot.py").read())
+				print(Style.BRIGHT + Fore.YELLOW + "LOG : bootfile.dat for " + data.packagename + " generated")
 
-#Write new value in JSON file
-func_UpdateJson(jsondata)
+		#Manage Hekate boot.data file case
+		if (args.hekate):
+			if data.filetype == "Bootloader" and data.packagename == "Hekate":
+				for file in os.listdir(SDDirectory):
+					if (file.startswith("hekate")):
+						filename = SDDirectory + "/" + file
+				exec(open(ToolsDirectory + "/tx_custom_boot.py").read())
+				print(Style.BRIGHT + Fore.YELLOW + "LOG : bootfile.dat for " + data.packagename + " generated")
+		
+		#If there is an update, the value become True.
+		NeedToUpdate=True
+
+	#Convert data to dict format and update jsondata entry
+	jsondata["soft"][index] = data.__dict__
+	#Count the index of the jsondata[soft] dict
+	index += 1
+
+#If there is any modification
+if (NeedToUpdate):
+	#Write new value in JSON file
+	func_UpdateJson(jsondata)
+	#Creating ZIP
+	zipname = "Pack.Atmosphere." + AtmosphereVersion + ".Hekate." + HekateVersion + ".Sigpatch.FW." + PatchesVersion.split("-")[0] + ".AtmoVersion." + PatchesVersion.split("-")[1]
+	shutil.make_archive(zipname, 'zip', SDDirectory)
