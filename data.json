@@ -91,6 +91,16 @@
             "filetype": "Homebrew"
         },
         {
+            "packagename": "FTPD",
+            "repository": "mtheall/ftpd",
+            "releasetype": "latest",
+            "filename": "",
+            "filesearch": "(ftpd.nro)",
+            "url": "",
+            "version": "",
+            "filetype": "Homebrew"
+        },
+        {
             "packagename": "JKSV",
             "repository": "J-D-K/JKSV",
             "releasetype": "latest",

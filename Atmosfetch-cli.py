@@ -19,7 +19,7 @@ SDDirectory = "SD"
 ToolsDirectory= "Tools"
 #Folders
 ScriptFolders = [DownloadDirectory, SDDirectory, ToolsDirectory]
-SDFolders = ["atmosphere", "bootloader", "switch"]
+SDFolders = ["atmosphere", "bootloader", "/bootloader/payloads/", "switch"]
 #CleanMode
 cleanmode = False
 
@@ -194,8 +194,14 @@ for i in jsondata["soft"]:
 	data = package(**i)
 	#If there is an update (return True) or if we are ine CleanMode !
 	if (func_CheckGithubRepository(data,gh_session) or cleanmode):
+
+		#If there is an update, the value become True to start some actions.
+		NeedToUpdate=True
+
+		#Start download function with data object as argument
 		func_DownloadFiles(data)
-		#Check if file is Atmosphere to get version
+
+		#Check package name to get version for zipfilename
 		if data.packagename == "Atmosphere":
 			AtmosphereVersion = data.version
 		if data.packagename == "Hekate":
@@ -203,7 +209,7 @@ for i in jsondata["soft"]:
 		if data.packagename == "Patches":
 			PatchesVersion = data.version
 
-		#Check if file is a ZipFile
+		#Check if file is a ZipFile and unzip it in SD folder
 		if re.findall("%s" % ".*.zip", data.filename, re.IGNORECASE):
 			func_UnzipFiles(data,SDDirectory,DownloadDirectory)
 
@@ -215,33 +221,47 @@ for i in jsondata["soft"]:
 		if data.filetype == "Homebrew":
 			shutil.copyfile(DownloadDirectory + "/" + data.filename, SDDirectory + "/switch/" + data.filename)
 
+		#ATMOSPHERE FUSEE PART
 		#Manage Atmosphere boot.data file case
-		# If -at or if -c and no -he or 
-		if (args.atmosphere or (args.clean and not args.hekate) or (not (any(vars(args).values())))):
-			#Check if file is a bootfile to convert
-			if data.filetype == "Bootloader" and data.packagename == "Atmosphere-Fusee":
+		#Check if it's a bootloader payload to convert and check the package name
+		if data.filetype == "Bootloader" and data.packagename == "Atmosphere-Fusee":
+			#Copy fusee.bin in hekate payload folder
+			shutil.copyfile(DownloadDirectory + "/" + data.filename, SDDirectory + "/bootloader/payloads/" + data.filename)
+			#Check args : If -at or if -c or if -at and -c or no args but not -he
+			if (args.atmosphere or (args.clean and not args.hekate) or (not (any(vars(args).values())))):
 				filename = DownloadDirectory + "/" + data.filename
+				#Convert bootloader payload as boot.dat
 				exec(open(ToolsDirectory + "/tx_custom_boot.py").read())
 				print(Style.BRIGHT + Fore.YELLOW + "LOG : bootfile.dat for " + data.packagename + " generated")
-
-		#Manage Hekate boot.data file case
-		if (args.hekate):
-			if data.filetype == "Bootloader" and data.packagename == "Hekate":
-				for file in os.listdir(SDDirectory):
-					if (file.startswith("hekate")):
-						filename = SDDirectory + "/" + file
+				#Copy fusee.bin on SD root as payload.bin for RCM Injector
+				shutil.copyfile(filename, SDDirectory + "/payload.bin")
+				
+		#HEKATE PART
+		#Check if it's a bootloader payload to convert and check the package name
+		if data.filetype == "Bootloader" and data.packagename == "Hekate":
+			#Search Hekate file in SD folder
+			for file in os.listdir(SDDirectory):
+				if (file.startswith("hekate")):
+					filename = SDDirectory + "/" + file
+			#Copy hekate bootloader payload in atmosphere folder as reboot_payload.bin file to reboot on it
+			shutil.copyfile(filename, SDDirectory + "/atmosphere/" + "reboot_payload.bin")
+			#Manage Hekate boot.data file case
+			if (args.hekate): 
+				#Convert hekate_ctcaer_X.X.X.bin file as boot.dat
 				exec(open(ToolsDirectory + "/tx_custom_boot.py").read())
 				print(Style.BRIGHT + Fore.YELLOW + "LOG : bootfile.dat for " + data.packagename + " generated")
-		
-		#If there is an update, the value become True.
-		NeedToUpdate=True
-
+				#Rename hekate_ctcaer_X.X.X.bin file as payload.bin
+				shutil.move(filename, SDDirectory + "/payload.bin")
+			#Remove hekate_ctcaer_X.X.X.bin file if it's atmosphere fusee mode
+			if (args.atmosphere or (args.clean and not args.hekate) or (not (any(vars(args).values())))):
+				os.remove(filename)
+				
 	#Convert data to dict format and update jsondata entry
 	jsondata["soft"][index] = data.__dict__
 	#Count the index of the jsondata[soft] dict
 	index += 1
 
-#If there is any modification
+#If there is any modification : Write new information in jsonfile and create a new zip file.
 if (NeedToUpdate):
 	#Write new value in JSON file
 	func_UpdateJson(jsondata)
