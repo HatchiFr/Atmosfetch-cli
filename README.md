@@ -20,6 +20,7 @@ AtmosFetch is a python script to download latest Atmosphere release with some ex
 ## 🌠 User's guide
 
 There is 3 available modes with Atmosfetch :
+
 -at : Atmosphere as default boot SXOS RCM (boot.dat).  
 -he : Hekate as default boot SXOS RCM (boot.dat).
 -c  : Clean mode, delete SD folder and redownload all even if there isn't updates.
