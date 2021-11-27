@@ -26,8 +26,7 @@ You can combine a boot mode with clean mode.
 
 When the script finish to execute : there is a SD folder with files that you can copy on your SD as is and a end zip file that you can share or keep for archives.
 
-
-Thanks to the developer for their work
+## 🚀 Thanks to the developer for their work
 
 - SciresM (Atmosphère & DayBreak) : https://github.com/Atmosphere-NX/Atmosphere
 - SciresM & FlagBrew (Checkpoint) : https://github.com/FlagBrew/Checkpoint
