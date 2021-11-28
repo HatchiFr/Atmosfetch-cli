@@ -35,7 +35,7 @@ import json
 #OS.PATH & SHUTIL is needed to manage files
 import os.path
 import shutil
-#Colorama is needed to have colorfoul print
+#Colorama is needed to have colourful print
 from colorama import init, Fore, Back, Style
 #Re is used for regex
 import re
@@ -56,7 +56,7 @@ class package:
 
 ##.:::. Functions .:::.
 def func_RelocateCurrentWorkingFolder():
-	os.chdir(os.path.dirname(__file__))
+	os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def func_CleanSDFolder():
 	try:
@@ -88,7 +88,7 @@ def func_UpdateJson(jsondata):
 
 def func_CheckGithubRepository(data,gh_session):
 	#Check last release version of needed repository
-	#Scrap Repository informations and tranform data to exploitable Json
+	#Scrap Repository informations and transform data to exploitable Json
 	if data.releasetype == "latest":
 		githubresult = json.loads(gh_session.get("https://api.github.com/repos/" + data.repository + "/releases/latest").text)
 	if data.releasetype == "pre-release":
@@ -154,11 +154,7 @@ if (args.atmosphere and args.hekate):
 	exit()
 
 #Change current working dir to script location folder
-os.chdir(os.path.dirname(__file__))
-
-#if not (any(vars(args).values())):
-#	print (Style.BRIGHT + Fore.RED + "ERROR : You must at least specify one argument to use that script, check -h")
-#	exit()
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 if args.clean :
 	#Function to clean on demand the SD Folder
@@ -180,7 +176,7 @@ func_SkeletonFolders()
 #Import JSON data file to a Dict
 jsondata = func_ImportJson()
 
-#Create a re-usable session object with the user creds in-built
+#Create a reusable session object with the user creds in-built
 gh_session = requests.Session()
 gh_session.auth = (username, token)
 
@@ -192,10 +188,10 @@ NeedToUpdate = False
 for i in jsondata["soft"]:
 	#The double asterisks ** expands the dictionary jsondata to allow every key-value pair from dict to be passed to the __init__() method of Class.
 	data = package(**i)
-	#If there is an update (return True) or if we are ine CleanMode !
+	#If there is an update (return True) or if we are ine Clean Mode !
 	if (func_CheckGithubRepository(data,gh_session) or cleanmode):
 
-		#If there is an update, the value become True to start some actions.
+		#If there is an update, the value becomes True to start some actions.
 		NeedToUpdate=True
 
 		#Start download function with data object as argument
