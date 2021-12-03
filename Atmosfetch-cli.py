@@ -197,14 +197,6 @@ for i in jsondata["soft"]:
 		#Start download function with data object as argument
 		func_DownloadFiles(data)
 
-		#Check package name to get version for zipfilename
-		if data.packagename == "Atmosphere":
-			AtmosphereVersion = data.version
-		if data.packagename == "Hekate":
-			HekateVersion = data.version.replace("v", "")
-		if data.packagename == "Patches":
-			PatchesVersion = data.version
-
 		#Check if file is a ZipFile and unzip it in SD folder
 		if re.findall("%s" % ".*.zip", data.filename, re.IGNORECASE):
 			func_UnzipFiles(data,SDDirectory,DownloadDirectory)
@@ -256,6 +248,14 @@ for i in jsondata["soft"]:
 	jsondata["soft"][index] = data.__dict__
 	#Count the index of the jsondata[soft] dict
 	index += 1
+
+	#Check package name to get version for zipfilename
+	if data.packagename == "Atmosphere":
+		AtmosphereVersion = data.version
+	if data.packagename == "Hekate":
+		HekateVersion = data.version.replace("v", "")
+	if data.packagename == "Patches":
+		PatchesVersion = data.version
 
 #If there is any modification : Write new information in jsonfile and create a new zip file.
 if (NeedToUpdate):
