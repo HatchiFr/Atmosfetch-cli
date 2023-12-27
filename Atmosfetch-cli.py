@@ -1,8 +1,8 @@
 """"
 Use Python 3
 Workload Patch Script made by HatchiFR
-Version 1.0
-Date 27/11/2021
+Version 1.1
+Date 27/12/2021
 """
 
 ##Inputs
@@ -95,21 +95,27 @@ def func_CheckGithubRepository(data,gh_session):
 		githubresult = (json.loads(gh_session.get("https://api.github.com/repos/" + data.repository + "/releases").text))[0]
 
 	#Check if newer version exist
-	if data.version >= githubresult["tag_name"]:
-		print(Style.BRIGHT + Fore.YELLOW + "No update are available for " + Fore.WHITE + data.packagename + Fore.YELLOW + " version is : " + Fore.WHITE + data.version)
-		#Return False, there is a no update
-		return False
-	else:
-		searchresult = func_SearchFileGithubRepository(githubresult, data)
-		#Add/Update package information
-		data.filename = searchresult["name"]
-		data.url = searchresult["browser_download_url"]
-		data.version = githubresult["tag_name"]
+	print(Style.BRIGHT + Fore.GREEN + "Working on : " + Fore.WHITE + data.packagename)
+	if (githubresult["tag_name"]):
+		if data.version >= githubresult["tag_name"]:
+			print(Style.BRIGHT + Fore.YELLOW + "No update are available for " + Fore.WHITE + data.packagename + Fore.YELLOW + " version is : " + Fore.WHITE + data.version)
+			#Return False, there is a no update
+			return False
+		else:
+			searchresult = func_SearchFileGithubRepository(githubresult, data)
+			#Add/Update package information
+			data.filename = searchresult["name"]
+			data.url = searchresult["browser_download_url"]
+			data.version = githubresult["tag_name"]
 
-		#Print if a new version is available
-		print(Style.BRIGHT + Fore.CYAN + "New update is available ! Latest " + Fore.WHITE + data.packagename + Fore.CYAN + " version is : " + Fore.WHITE + data.version)
-		#Return True, there is a new update
-		return True
+			#Print if a new version is available
+			print(Style.BRIGHT + Fore.CYAN + "New update is available ! Latest " + Fore.WHITE + data.packagename + Fore.CYAN + " version is : " + Fore.WHITE + data.version)
+			#Return True, there is a new update
+			return True
+	else:
+		print(Style.BRIGHT + Fore.GREEN + "DEBUG data.version : " + Fore.WHITE + data.version)
+		print(Style.BRIGHT + Fore.GREEN + "DEBUG githubresult TAB_Name : " + Fore.WHITE + githubresult["tag_name"])
+		
 
 def func_SearchFileGithubRepository(githubresult, data):
 	#Search in all assets if there is the good file, return it if it's founded
@@ -137,7 +143,7 @@ def func_UnzipFiles(data,SDDirectory,DownloadDirectory):
 # Initiate the parser
 print(Style.BRIGHT + Fore.WHITE + "Welcome on AtmosFetch !")
 print(Style.BRIGHT + Fore.WHITE + "Script created by HatchiFR")
-print(Style.BRIGHT + Fore.WHITE + "Version 1.0 - 24/11/2021")
+print(Style.BRIGHT + Fore.WHITE + "Version 1.1 - 27/12/2021")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-he", "--hekate", help="Convert hekate.bin as boot.dat", action="store_true")
@@ -262,5 +268,5 @@ if (NeedToUpdate):
 	#Write new value in JSON file
 	func_UpdateJson(jsondata)
 	#Creating ZIP
-	zipname = "Pack.Atmosphere." + AtmosphereVersion + ".Hekate." + HekateVersion + ".Sigpatch.FW." + PatchesVersion.split("-")[0] + ".AtmoVersion." + PatchesVersion.split("-")[1]
+	zipname = "Pack.Atmosphere." + AtmosphereVersion + ".Hekate." + HekateVersion + ".Sys-Module." + PatchesVersion
 	shutil.make_archive(zipname, 'zip', SDDirectory)
